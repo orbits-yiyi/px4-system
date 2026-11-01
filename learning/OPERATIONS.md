@@ -237,7 +237,16 @@ HTTPS_PROXY=http://127.0.0.1:7897 HTTP_PROXY=http://127.0.0.1:7897 \
 git clone --branch learn/px4-v1.17.0 --recurse-submodules https://github.com/orbits-yiyi/px4-system.git
 ```
 
-再用embedded-lab绑定新源码路径和实际工具环境。Git不保存正在运行的容器、全部参数或大日志；子模块内部修改需分别提交并能从远端获取，主仓库只记录其提交指针。
+新克隆的目录默认名为px4-system，origin会指向个人仓库。若沿用本手册的远程命名，进入新目录后执行：
+
+```bash
+cd px4-system
+git remote rename origin personal
+git remote add origin https://github.com/PX4/PX4-Autopilot.git
+git config remote.pushDefault personal
+```
+
+再用embedded-lab绑定这个新源码路径和实际工具环境，不继续套用旧机器的绝对路径。Git不保存正在运行的容器、全部参数或大日志；子模块内部修改需分别提交并能从远端获取，主仓库只记录其提交指针。
 
 <a id="troubleshooting"></a>
 ## 常见问题
