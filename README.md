@@ -1,26 +1,16 @@
-# PX4 System：v1.17.0 学习与开发
+# PX4 System：从零读懂并开发 PX4 v1.17.0
 
-这是基于PX4 v1.17.0的个人学习仓库，保存技术说明、操作方法、学习实践和后续源码改动。上游来源是[PX4/PX4-Autopilot](https://github.com/PX4/PX4-Autopilot)，个人仓库是[orbits-yiyi/px4-system](https://github.com/orbits-yiyi/px4-system)。
+这是 [orbits-yiyi/px4-system](https://github.com/orbits-yiyi/px4-system) 的学习与开发仓库，保留 PX4 v1.17.0 的源码、上游历史和依赖版本。
 
-## 从这里找文档
+**学习从 [learn/README.md](learn/README.md) 开始。** 文档按“认识系统 → 明确学习顺序 → 分阶段动手”组织：
 
-| 你现在想做什么 | 文档 |
-|---|---|
-| 知道先学什么、下一步做什么 | **[学习路线](learning/ROADMAP.md)** |
-| 理解架构、原理、模块和源码 | **[技术说明](learning/TECHNICAL.md)** |
-| 编译、仿真、测试、看日志、提交代码 | **[操作手册](learning/OPERATIONS.md)** |
+| 顺序 | 教材 | 解决的问题 |
+|---|---|---|
+| 1 | [PX4 技术实现与架构](learn/01-understand-px4.md) | PX4 是什么，飞控为什么需要这些模块，它们怎样协同工作 |
+| 2 | [系统学习路线](learn/02-learning-path.md) | 为了独立分析、修改和验证 PX4，应按什么顺序学到什么程度 |
+| 3 | [分阶段操作手册](learn/03-practice-guide.md) | 每一步在哪里执行、改哪里、看什么、怎样解释与排错 |
 
-你已完成基础编译与SIH起降。下一步从[解释已有起降数据](learning/ROADMAP.md#start)开始，再学习运行机制与模块开发。正式文档固定在learning目录，以这里为入口。
-
-## 仓库与环境
-
-- 基线：v1.17.0，提交d6f12ad1c4f70ad3230afd7d86e971421e02fef4。
-- 开发分支：learn/px4-v1.17.0，保留PX4上游历史和子模块锁定关系。
-- 环境：现有embedded-lab的px4-main任务；任务名与Git分支独立。
-- 示例：[只读状态观察模块](learning/examples/learn_state_monitor)。
-- 个人笔记：[records](learning/records)；previous内是历史资料，不代表当前状态。
-
-日常构建、远程推送和新机器恢复都在[操作手册](learning/OPERATIONS.md)。上游许可和说明保留如下。
+源码基线为 `v1.17.0`（`d6f12ad1c4f70ad3230afd7d86e971421e02fef4`），开发分支为 `learn/px4-v1.17.0`。文档和实验随该分支演进。日常使用现有 `~/embedded-lab/bin/lab` 的 `px4-main` 任务；任务名不决定源码版本。
 
 <details>
 <summary>PX4 上游项目说明</summary>
