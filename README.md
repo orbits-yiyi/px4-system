@@ -1,16 +1,17 @@
-# PX4 System：从零读懂并开发 PX4 v1.17.0
+# PX4 系统学习与开发
 
-这是 [orbits-yiyi/px4-system](https://github.com/orbits-yiyi/px4-system) 的学习与开发仓库，保留 PX4 v1.17.0 的源码、上游历史和依赖版本。
+本仓库围绕完整理解、使用、分析和开发 PX4 组织学习资料，保留对应源码供阅读和实践。
 
-**学习从 [learn/README.md](learn/README.md) 开始。** 文档按“认识系统 → 明确学习顺序 → 分阶段动手”组织：
+**统一入口：[PX4 系统学习文档](learn/README.md)。** 初次学习先读[整体架构](learn/TECHNICAL.md#c1)，再按[学习路线](learn/ROADMAP.md)完成对应阶段。
 
-| 顺序 | 教材 | 解决的问题 |
-|---|---|---|
-| 1 | [PX4 技术实现与架构](learn/01-understand-px4.md) | PX4 是什么，飞控为什么需要这些模块，它们怎样协同工作 |
-| 2 | [系统学习路线](learn/02-learning-path.md) | 为了独立分析、修改和验证 PX4，应按什么顺序学到什么程度 |
-| 3 | [分阶段操作手册](learn/03-practice-guide.md) | 每一步在哪里执行、改哪里、看什么、怎样解释与排错 |
+| 文档 | 内容 |
+|---|---|
+| [系统架构与技术原理](learn/TECHNICAL.md) | 物理、硬件、测量、估计、控制、导航、安全与外部应用怎样组成完整系统 |
+| [代码架构与开发指南](learn/DEVELOPMENT.md) | 工程、子模块、构建、启动、调度、接口、核心模块与开发实现 |
+| [系统学习路线](learn/ROADMAP.md) | 各阶段目标、实施任务、通过标准、补足建议及综合项目 |
+| [操作与调试手册](learn/OPERATIONS.md) | 编译、仿真、任务、应用、日志、GDB、回放、测试、性能及板上调试 |
 
-源码基线为 `v1.17.0`（`d6f12ad1c4f70ad3230afd7d86e971421e02fef4`），开发分支为 `learn/px4-v1.17.0`。文档和实验随该分支演进。日常使用现有 `~/embedded-lab/bin/lab` 的 `px4-main` 任务；任务名不决定源码版本。
+正文不预设已有操作经历。环境、源码基线与版本对应关系见[操作手册附录](learn/OPERATIONS.md#environment)。个人仓库：[orbits-yiyi/px4-system](https://github.com/orbits-yiyi/px4-system)。
 
 <details>
 <summary>PX4 上游项目说明</summary>
