@@ -1,3 +1,30 @@
+# PX4 System：v1.17.0 学习与开发
+
+这是基于PX4 v1.17.0的个人学习仓库，保存技术说明、操作方法、学习实践和后续源码改动。上游来源是[PX4/PX4-Autopilot](https://github.com/PX4/PX4-Autopilot)，个人仓库是[orbits-yiyi/px4-system](https://github.com/orbits-yiyi/px4-system)。
+
+## 从这里找文档
+
+| 你现在想做什么 | 文档 |
+|---|---|
+| 知道先学什么、下一步做什么 | **[学习路线](learning/ROADMAP.md)** |
+| 理解架构、原理、模块和源码 | **[技术说明](learning/TECHNICAL.md)** |
+| 编译、仿真、测试、看日志、提交代码 | **[操作手册](learning/OPERATIONS.md)** |
+
+你已完成基础编译与SIH起降。下一步从[解释已有起降数据](learning/ROADMAP.md#start)开始，再学习运行机制与模块开发。正式文档固定在learning目录，以这里为入口。
+
+## 仓库与环境
+
+- 基线：v1.17.0，提交d6f12ad1c4f70ad3230afd7d86e971421e02fef4。
+- 开发分支：learn/px4-v1.17.0，保留PX4上游历史和子模块锁定关系。
+- 环境：现有embedded-lab的px4-main任务；任务名与Git分支独立。
+- 示例：[只读状态观察模块](learning/examples/learn_state_monitor)。
+- 个人笔记：[records](learning/records)；previous内是历史资料，不代表当前状态。
+
+日常构建、远程推送和新机器恢复都在[操作手册](learning/OPERATIONS.md)。上游许可和说明保留如下。
+
+<details>
+<summary>PX4 上游项目说明</summary>
+
 # PX4 Drone Autopilot
 
 [![Releases](https://img.shields.io/github/release/PX4/PX4-Autopilot.svg)](https://github.com/PX4/PX4-Autopilot/releases) [![DOI](https://zenodo.org/badge/22634/PX4/PX4-Autopilot.svg)](https://zenodo.org/badge/latestdoi/22634/PX4/PX4-Autopilot)
@@ -60,3 +87,5 @@ The PX4 Autopilot project including all of its trademarks is hosted under [Drone
 
 <a href="https://www.dronecode.org/" style="padding:20px" ><img src="https://dronecode.org/wp-content/uploads/sites/24/2020/08/dronecode_logo_default-1.png" alt="Dronecode Logo" width="110px"/></a>
 <div style="padding:10px">&nbsp;</div>
+
+</details>
