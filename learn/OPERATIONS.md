@@ -2,9 +2,9 @@
 
 [文档首页](README.md) · [系统架构与技术原理](TECHNICAL.md) · [代码架构与开发指南](DEVELOPMENT.md) · [学习路线](ROADMAP.md)
 
-本手册把学习路线转为具体工作：建立系统模型、读懂工程、编译调试、配置载具、分析测量、验证算法、规划任务、集成应用和完成开发。每个阶段给出实施步骤、结果解释和完成标准。首次接触 PX4 时，从阶段 1 开始；处理具体问题时，可直接查对应专题。
+本手册按技术主题提供具体步骤、结果解释和完成标准，覆盖系统建模、编译调试、仿真、算法验证、任务、集成和部署。学习顺序统一由[学习路线](ROADMAP.md)安排；路线中的任务直接链接到这里的对应小节，两者编号不要求相同。处理具体问题时，也可直接查专题。
 
-涉及动力、模式切换和故障注入的入门实验均在仿真中进行。真实硬件操作集中在阶段 9，采用单独的设备识别与台架流程。文中的示例数据是推演条件，不代表读者已有实验结果。
+涉及动力、模式切换和故障注入的入门实验均在仿真中进行。真实硬件操作集中在第 9 章，采用单独的设备识别与台架流程。文中的示例数据是推演条件，不代表读者已有实验结果。
 
 ## 目录
 
@@ -33,7 +33,7 @@
 | QGC | 地面站界面 | 设备配置、任务规划、模式请求与状态查看 |
 | ROS | 已加载 ROS 和消息工作区的终端 | ROS 节点、topic、QoS 与应用集成 |
 
-代码块不包含终端提示符。不要把 `pxh>` 或 `(gdb)` 一并复制。开发环境尚未准备时，先完成不依赖工具的阶段 1、2，再按[环境附录](#environment)准备阶段 3。
+代码块不包含终端提示符。不要把 `pxh>` 或 `(gdb)` 一并复制。开发环境尚未准备时，先完成不依赖工具的第 1、2 章，再按[环境附录](#environment)准备第 3 章。
 
 <a id="s1"></a>
 ## 1. 整体架构：建立系统模型
@@ -167,6 +167,7 @@ rg --files msg | rg 'SensorAccel|VehicleStatus|OrbTest|ParameterUpdate'
 
 接着研究真实模块 `mc_pos_control`：模块封装在 `MulticopterPositionControl.cpp`，算法在 `PositionControl/`。把订阅、模式门控、参数更新、算法调用、发布分别标出来。这样能看清“算法正确”与“模块正确运行”是两层问题。
 
+<a id="build-first"></a>
 ### 3.2 理解并完成一次构建
 
 确认[环境附录](#environment)中的源码挂载关系后，在宿主执行：
@@ -190,6 +191,7 @@ ls -l build/px4_sitl_default/compile_commands.json
 
 再次运行相同构建命令应主要复用已有产物。更改一个 `.cpp` 后观察重编范围；更改消息定义或公共头文件可能触发更多依赖重编。遇到错误，从第一条编译器/CMake 错误开始读，末尾 `Error 1` 只是失败汇总。
 
+<a id="editor-index"></a>
 ### 3.3 建立准确的编辑器索引
 
 在容器开发入口打开项目，确认编辑器所见路径为 `/workspaces/PX4-Autopilot`。已有 Dev Container 设置时，将 C/C++ 扩展的 `C_Cpp.default.compileCommands` 指向：
@@ -202,6 +204,7 @@ ls -l build/px4_sitl_default/compile_commands.json
 
 构建配置改变后更新索引。研究 `#if` 分支时，区分当前目标实际启用的代码和源码中存在但未编译的代码。
 
+<a id="module-runtime"></a>
 ### 3.4 仿真与模块运行
 
 在宿主启动 SIH：
@@ -235,9 +238,10 @@ work_item_example stop
 
 `px4_simple_app` 的示例会发布合成姿态，不能未经检查就与正常估计器并行用于飞行实验。选择教学模块也需要检查其输出影响。
 
+<a id="module-exercise"></a>
 ### 3.5 完成一个有明确边界的源码实验
 
-按[开发指南第 9 章的 9.1～9.6 节](DEVELOPMENT.md#d9)完成参数驱动的 WorkItem 实验：参数定义和构建注册 → 定时调度 → 消息发布 → 参数更新 → 停止/重启验证，再整理为独立模块并定义自己的消息。该处提供完整修改位置与代码，本章不维护另一份略有不同的实现。9.7 节的算法测试放到阶段 6。
+按[开发指南第 9 章的 9.1～9.6 节](DEVELOPMENT.md#d9)完成参数驱动的 WorkItem 实验：参数定义和构建注册 → 定时调度 → 消息发布 → 参数更新 → 停止/重启验证，再整理为独立模块并定义自己的消息。该处提供完整修改位置与代码，本章不维护另一份略有不同的实现。9.7 节的算法测试放到第 6 章。
 
 先预测周期从 100 ms 改为 200 ms 会产生什么变化，再编译并记录实际消息频率、参数生效延迟和停止行为。若结果不符，分别检查是否运行新二进制、参数是否进入构建、是否收到参数更新、是否仍注册旧回调；不要同时修改所有层。
 
@@ -253,8 +257,9 @@ rg -n 'MIS_TAKEOFF_ALT|_param_mis_takeoff_alt' src/modules/navigator ROMFS
 
 找到定义、默认值、包装成员和使用点。再在 QGC 参数页或 PX4 `param show MIS_TAKEOFF_ALT` 读取实际值。说明保存值、airframe 默认值和源码默认值的区别。
 
-在仅用于仿真的运行中记录原值，再修改一个目标高度，观察参数读回。行为实验放到阶段 6；此处先确定消费者在何时读取它。实验结束恢复原值并再次读回，不能假设重启必然恢复默认配置。
+在仅用于仿真的运行中记录原值，再修改一个目标高度，观察参数读回。行为实验放到第 6 章；此处先确定消费者在何时读取它。实验结束恢复原值并再次读回，不能假设重启必然恢复默认配置。
 
+<a id="gdb-first"></a>
 ### 3.7 用 GDB 理解算法调用
 
 先调试输入确定的单元测试。宿主：
@@ -283,7 +288,7 @@ continue
 quit
 ```
 
-将调用栈与 [rate_control_test.cpp](../src/lib/rate_control/rate_control_test.cpp) 对照，确认测试怎样构造输入、算法怎样产生输出。已有零输入用例适合熟悉调用过程；非零 P/I/D 行为在阶段 6 单独研究。
+将调用栈与 [rate_control_test.cpp](../src/lib/rate_control/rate_control_test.cpp) 对照，确认测试怎样构造输入、算法怎样产生输出。已有零输入用例适合熟悉调用过程；非零 P/I/D 行为在第 6 章单独研究。
 
 断点不命中时检查二进制、测试筛选和实际执行路径；显示 `optimized out` 时检查 Debug 构建与该源文件编译选项。单步进入函数用 `step`，只执行下一源代码行用 `next`，查看所有线程栈用 `thread apply all bt`。
 
@@ -345,6 +350,7 @@ run
 
 对于静止水平 IMU，预测陀螺仪接近零、加速度计 FRD z 接近 −g。对于匀速直线运动，理想加速度计并不能直接告诉你速度是多少。先给出预测，再用数据核对，能避免把静止比力误判成运动加速度。
 
+<a id="sensor-observation"></a>
 ### 4.2 对照设备消息、积分消息与控制输入
 
 启动仿真后，在 PX4 分别读取：
@@ -366,6 +372,7 @@ listener vehicle_angular_velocity
 
 若有频谱工具，使用近似均匀采样、足够长的稳定片段，并说明采样率、窗函数和频率分辨率。短促运动包含真实低频分量；不能看到峰就全部归为电机振动。仿真噪声特征也不能代替实际安装的振动评价。
 
+<a id="driver-reading"></a>
 ### 4.4 阅读设备驱动与校准过程
 
 阅读 [BMI088_Gyroscope.cpp](../src/drivers/imu/bosch/bmi088/BMI088_Gyroscope.cpp) 的 `RunImpl()`、`FIFORead()` 与 `ConfigureGyro()`。画 RESET、配置、读 FIFO、异常恢复之间的转移，标出每次等待由调度还是阻塞实现。
@@ -381,12 +388,14 @@ listener vehicle_angular_velocity
 
 阅读：[技术说明第 6 章](TECHNICAL.md#c6)。按数学更新、信息源管理、系统输出三个层次学习。
 
+<a id="estimation-math"></a>
 ### 5.1 手算更新与门限
 
 复算技术说明中的高度例子：预测 2.0 m、方差 0.25 m²，观测 2.4 m、方差 0.75 m²，更新结果 2.1 m、方差 0.1875 m²。保持其他条件不变，将 R 改为 0.25 m²，结果应为 2.2 m、方差 0.125 m²。
 
 这表示更信任观测，不表示观测实际更准确。再设创新为 4 m、创新方差为 1 m²、门限为 3，则检验比为 `16/9>1`。解释接受观测、拒绝观测、融合超时与参考切换四个不同动作。
 
+<a id="estimation-test"></a>
 ### 5.2 用现有测试研究高度参考
 
 宿主运行：
@@ -406,12 +415,14 @@ listener vehicle_angular_velocity
 
 这里的时长和误差容限属于测试条件，不是所有飞机都会在同样秒数内切换。可复制该用例增加一个自拟场景，但先写预期与理由，再改输入；不能为使测试通过随意放宽断言。
 
+<a id="estimation-path"></a>
 ### 5.3 连接到实际融合路径
 
 沿 `EKF2::UpdateGpsSample()` → `estimator_interface.cpp` → `gps_control.cpp` → `gnss_height_control.cpp` → `PublishLocalPosition()` 阅读。每一处只记录四项：输入、处理、退出/拒绝条件、下一层。
 
 再打开对应 GNSS aid-source 消息，查看 observation、innovation、variance、rejected 和最后融合时间。使用当前运行实例的日志；多 EKF 情况下必须确认被选择的估计器，不能混用不同实例曲线。
 
+<a id="estimation-reset"></a>
 ### 5.4 区分真实运动与估计跳变
 
 对一个 z 突变片段，在同一时间轴放置：位置、速度、reset counter、垂直观测、目标、推力及模式。先判断是否有重置，再判断是否发生物理运动。
@@ -425,6 +436,7 @@ listener vehicle_angular_velocity
 
 阅读：[技术说明第 7 章](TECHNICAL.md#c7)、[第 13 章](TECHNICAL.md#c13)。把目标生成、闭环控制和实际输出分开分析，再连接起来。
 
+<a id="control-math"></a>
 ### 6.1 计算一轮控制并对照实现
 
 先用简化单轴角速度控制做数值练习，假设本轮已有积分项为 0.02，`Kp=0.15`、`Kd=0.003`、`Kff=0.01`，目标角速度 1 rad/s、实际 0.4 rad/s、实际角加速度 2 rad/s²：
@@ -437,6 +449,7 @@ u = Kp × error + I - Kd × angular_acceleration + Kff × rate_setpoint
 
 这是给定归一化控制系数的教学算例，不是推荐调参值。若 Ki 为 0.1、dt 为 0.004 s，未考虑积分抑制与饱和时，本次积分增量为 0.00024。随后阅读 [rate_control.cpp](../src/lib/rate_control/rate_control.cpp)，解释实际实现为什么还要限制积分、考虑饱和方向和非有限数值。
 
+<a id="control-tests"></a>
 ### 6.2 从已有测试认识算法契约
 
 宿主执行位置控制测试：
@@ -451,13 +464,14 @@ u = Kp × error + I - Kd × angular_acceleration + Kff × rate_setpoint
 
 再按[开发指南 9.7 节](DEVELOPMENT.md#algorithm-exercise)建立独立的一维参考限速库及测试，完成“行为要求 → C++ 实现 → CMake 注册 → 定向运行 → 故意破坏后确实失败 → 恢复”。这一步把会运行已有测试推进到能为自己的改动设计证据；算法先通过测试，再接入教学模块观察，不直接发布飞行控制目标。
 
+<a id="control-experiment"></a>
 ### 6.3 用仿真区分轨迹变化和控制响应
 
 先在 SIH 完成一次默认起飞、保持、降落，流程见[仿真工具](#simulation-tools)。记录当前 `MIS_TAKEOFF_ALT`，得到基线日志。再在地面把它设为另一个明确高度，例如 4 m，重复相同步骤，结束后恢复原值。
 
 对照 `trajectory_setpoint`、`vehicle_local_position_setpoint` 与 `vehicle_local_position`：最终目标变化、爬升过程中的目标生成、实际跟踪是三个不同观察对象。这项实验改变导航要求，不能称为 PID 调参实验。
 
-要研究轨迹限制，在阶段 7 使用同一路线，保持控制增益不变，仅改变 `MPC_XY_CRUISE` 的一个值；先记录原值与其他加速度/jerk 限制。若路线太短，可能从未达到巡航速度，应先分析目标轨迹而不是判定参数无效。
+要研究轨迹限制，在第 7 章使用同一路线，保持控制增益不变，仅改变 `MPC_XY_CRUISE` 的一个值；先记录原值与其他加速度/jerk 限制。若路线太短，可能从未达到巡航速度，应先分析目标轨迹而不是判定参数无效。
 
 要研究控制增益，先在算法测试中引入固定输入或在仿真中采用重复场景，每次只改变一个目标环的参数，保留原值和恢复步骤。真实飞机上的调参还需满足测量、机械和动力条件，参考 [PX4 多旋翼调参说明](https://docs.px4.io/v1.17/en/config_mc/pid_tuning_guide_multicopter)。
 
@@ -568,6 +582,7 @@ python3 build/learning-experiments/plot_vertical.py YOUR_LOG.ulg --start 10 --en
 
 保存图、输出数值、窗口、参数和原日志。比较两次实验时使用相同事件阶段及评价规则；若要研究轨迹规划，再加入 `trajectory_setpoint`，不能把内部位置控制目标与任务最终航点混为一条曲线。
 
+<a id="allocation-practice"></a>
 ### 6.5 从逻辑作用追到物理输出
 
 查看 airframe 中旋翼几何，再读控制分配器和输出映射。为每个电机记录位置、轴向、旋转方向、逻辑 Motor 编号和实际通道。
@@ -581,6 +596,7 @@ python3 build/learning-experiments/plot_vertical.py YOUR_LOG.ulg --start 10 --en
 
 阅读：[技术说明第 8 章](TECHNICAL.md#c8)、[第 9 章](TECHNICAL.md#c9)。这一阶段主要使用任务规划、状态机和完整场景，Shell 用于辅助观察。
 
+<a id="mission-planning"></a>
 ### 7.1 设计任务的几何与行为
 
 先在纸上定义一项仿真任务：起飞至相对 Home 10 m，在约 20 m 范围内访问两个观察点，各停留 3 s，随后返回并降落。巡航速度先取 2 m/s，检查现有加速度与 jerk 限制。数值仅用于小范围仿真，不是实际场地的飞行建议。
@@ -589,6 +605,7 @@ python3 build/learning-experiments/plot_vertical.py YOUR_LOG.ulg --start 10 --en
 
 先忽略相机动作，完成纯飞行任务；随后再加入载荷接口，才能区分导航失败与载荷失败。
 
+<a id="mission-qgc"></a>
 ### 7.2 在 QGC 完成规划、上传与核对
 
 前提是已有可运行的 QGC，并连接到本次 SITL。SIH 可以连接地面站，但不提供 Gazebo 式三维场景。网络连接方法见[工具附录](#qgc-tools)。
@@ -610,6 +627,7 @@ python3 build/learning-experiments/plot_vertical.py YOUR_LOG.ulg --start 10 --en
 
 研究两个变化：先只改变某航点的停留时间，再只改变巡航速度。停留改变任务推进条件，速度改变轨迹时间尺度。若航点被平滑经过，不能把地图点到航迹的距离直接当成位置控制稳态误差。
 
+<a id="mission-transitions"></a>
 ### 7.4 正常完成、中途取消和返航
 
 用同一计划执行三个独立场景，每次从明确的地面初态开始：
@@ -622,6 +640,7 @@ python3 build/learning-experiments/plot_vertical.py YOUR_LOG.ulg --start 10 --en
 
 请求使用 QGC 模式/动作控件。Shell 中也可观察 `commander status`、`listener mission_result`、`listener vehicle_status`，但日志应保存完整时序。任务暂停后是否恢复到原项、是否重做某项动作，要根据实际任务状态判断。
 
+<a id="gnss-degradation"></a>
 ### 7.5 先在地面研究定位质量退化
 
 在已确认落地且 Disarmed 的 SIH 中，先记录 `SIM_GPS_USED` 原值，再执行：
@@ -638,6 +657,7 @@ listener failsafe_flags
 
 随后恢复记录的原值并读回，等待质量与估计恢复后再开始其他实验。不要固定假设原值是某个数字。地面预检变化不能证明空中一定采取某种保护动作。
 
+<a id="failsafe-tests"></a>
 ### 7.6 用测试与场景矩阵研究保护策略
 
 宿主运行：
@@ -658,6 +678,7 @@ rg -n 'TEST_F|offboard|position|battery|rtl' src/modules/commander/failsafe/fail
 
 阅读：[技术说明第 10 章](TECHNICAL.md#c10)。应用开发从协议契约开始，随后实现数据、请求和控制流程。
 
+<a id="external-contract"></a>
 ### 8.1 为外部程序定义接口
 
 以“伴随计算机在两个点采集图像”为例，先决定使用 Mission 还是 Offboard。固定航点及简单动作可使用任务机制；需要程序实时决定目标时才引入持续外部控制。
@@ -675,6 +696,7 @@ rg -n 'TEST_F|offboard|position|battery|rtl' src/modules/commander/failsafe/fail
 
 应用的状态机可以从 `等待连接 → 检查状态 → 准备目标 → 请求控制权 → 执行 → 交还控制权 → 完成` 开始，每个状态另设超时和取消出口。收到 ACK 后仍需观察实际模式；任务完成还需等待实际运动或设备反馈。
 
+<a id="telemetry-first"></a>
 ### 8.2 先验证只读遥测
 
 在 PX4 用 `mavlink status` 确认实际实例和端口。默认单机 SITL 的 Onboard 路径通常将消息发到 UDP 14540。确认没有其他应用占用此端口，在宿主检查依赖：
@@ -712,6 +734,7 @@ finally:
 
 将接收到的位置与 PX4 的 `vehicle_local_position` 对照。MAVLink 的 `LOCAL_POSITION_NED` 不包含内部消息的全部有效性与重置字段；能读到位置不能替代完整的控制输入健康检查。
 
+<a id="offboard-practice"></a>
 ### 8.3 在仿真中验证外部控制权交接
 
 [附录程序](#offboard-example)用于单机 SIH 的短时间位置保持接口练习。它不承担完整飞行应用，模式请求由操作者发出。
@@ -742,6 +765,7 @@ listener trajectory_setpoint
 
 最后恢复两个参数原值并读回。切换完成、流停止、实际降落分别是不同事件；程序退出并不等于载具已经安全结束动作。
 
+<a id="dds-practice"></a>
 ### 8.4 验证 DDS/ROS 路径
 
 ROS 集成需要四项匹配：PX4 Client、Agent、消息定义和 ROS 环境。安装与版本放在[环境附录](#ros-environment)，不改变主学习顺序。
@@ -758,6 +782,7 @@ ros2 topic echo /fmu/out/vehicle_local_position_v1 --qos-reliability best_effort
 
 读通之后再迁移应用状态机。ROS Offboard 的 `OffboardControlMode` 与目标流是不同主题；程序要同时管理控制信号、目标及其有效状态。直接把遥测订阅代码改成 publisher，还没有形成可靠的控制应用。
 
+<a id="vision-payload"></a>
 ### 8.5 外部定位与载荷的进一步集成
 
 外部视觉先做一份数据契约：世界系、机体系、原点、单位、时间基准、延迟、协方差、质量和重置。按静止、单轴平移、单轴旋转、短时中断、重定位五种输入验证。
@@ -773,6 +798,7 @@ ros2 topic echo /fmu/out/vehicle_local_position_v1 --qos-reliability best_effort
 
 阅读：[技术说明第 3 章](TECHNICAL.md#c3)、[第 11 章](TECHNICAL.md#c11)。没有硬件时先完成配置研究和迁移分析，实测部分保留为未验证。
 
+<a id="board-identity"></a>
 ### 9.1 从板卡身份建立资源表
 
 先根据实际板卡型号、硬件修订和厂家资料确定 PX4 目标。以下以 `px4_fmu-v6x_default` 作为源码研究例子，不表示任意 Pixhawk 都应刷这个固件。
@@ -789,6 +815,7 @@ ros2 topic echo /fmu/out/vehicle_local_position_v1 --qos-reliability best_effort
 
 对照 [spi.cpp](../boards/px4/fmu-v6x/src/spi.cpp)、[timer_config.cpp](../boards/px4/fmu-v6x/src/timer_config.cpp) 理解资源怎样映射到软件。板级启动、通用应用启动和机型默认值分别在哪一层生效？
 
+<a id="firmware-build"></a>
 ### 9.2 编译并识别固件产物
 
 仅当研究目标确为上述板型时，在宿主编译：
@@ -801,6 +828,7 @@ ros2 topic echo /fmu/out/vehicle_local_position_v1 --qos-reliability best_effort
 
 真实设备刷写按该板卡官方文档与 QGC 的固件流程选择明确文件。刷写前保存当前参数与固件身份；设备校准、启动加载器、硬件修订和机型配置都需要对应，不能只匹配文件名的一部分。
 
+<a id="hardware-bench"></a>
 ### 9.3 无桨台架的配置顺序
 
 1. 拆除螺旋桨，确认供电与连接符合板卡和外设要求。USB 能连上不证明动力和外设供电正确。
@@ -820,6 +848,7 @@ SITL GDB 调试的是宿主进程；MCU 调试通常通过该板支持的 SWD/JT
 
 具体的控制台选择、GDB 接入、探针目标与 HardFault 保存步骤见[板上调试方法](#e8)。
 
+<a id="vehicle-transfer"></a>
 ### 9.5 用另一机型检验架构理解
 
 至少选一种非四旋翼机型深入研究。先比较启动脚本与控制模块，再建立不同的物理约束：
@@ -839,6 +868,7 @@ SIH 支持的模型可在 [simulator_sih/CMakeLists.txt](../src/modules/simulati
 
 阅读：[技术说明第 12 章](TECHNICAL.md#c12)、[第 13 章](TECHNICAL.md#c13)。这一阶段将知识组合成独立完成项目的能力。
 
+<a id="application-project"></a>
 ### 10.1 完成一个可恢复的系统应用
 
 把前面的“两观察点巡检”实现为可重复运行的应用：连接载具、核对状态、执行任务、协调图像采集、允许取消、返回或降落、输出运行结果。
@@ -849,6 +879,7 @@ SIH 支持的模型可在 [simulator_sih/CMakeLists.txt](../src/modules/simulati
 
 交付一张状态图、接口表、启动方法、配置、场景结果和日志分析。模拟相机响应可以验证接口流程；真实拍摄效果与曝光时间仍需设备实测。
 
+<a id="internal-project"></a>
 ### 10.2 完成一个飞控内部改动
 
 选择与已学机制相连的改动，例如：为一个独立实验模块增加带速度/加速度限制的目标生成算法，或为明确的输入处理路径补充缺失的有效性/重置处理。先提出可验证的行为，不以“改了一个文件”为目标。
@@ -869,10 +900,11 @@ SIH 支持的模型可在 [simulator_sih/CMakeLists.txt](../src/modules/simulati
 
 ### 10.3 完成部署或跨机型验证
 
-有硬件时完成阶段 9 的实测，再验证项目在实际资源与传感器条件下运行。无硬件时完成另一机型的模型、启动、控制、任务和保护分析，并明确哪些判断仅由仿真支持。
+有硬件时完成第 9 章的实测，再验证项目在实际资源与传感器条件下运行。无硬件时完成另一机型的模型、启动、控制、任务和保护分析，并明确哪些判断仅由仿真支持。
 
 如果迁移失败，按接口、物理模型、执行能力和状态机分别定位。例如固定翼不能原地保持，不应通过不断提高位置增益来“修复”。
 
+<a id="project-review"></a>
 ### 10.4 形成可审查的结果
 
 每个综合项目用一份紧凑记录说明：
@@ -891,7 +923,7 @@ SIH 支持的模型可在 [simulator_sih/CMakeLists.txt](../src/modules/simulati
 <a id="methods"></a>
 ## 11. 开发与调试方法：按问题选择工具
 
-前十章按学习阶段安排实践，本章是跨阶段使用的方法库。先确认“想证明什么、问题发生在哪个平台、能否暂停”，再选工具；无需每次把所有方法都跑一遍。首次入门先做阶段 3，随后随问题查阅本章。
+前十章按技术主题安排实践，本章是贯穿学习路线的方法库。先确认“想证明什么、问题发生在哪个平台、能否暂停”，再选工具；无需每次把所有方法都跑一遍。首次入门先做第 3 章，随后随问题查阅本章。
 
 | 方法 | 主要用途 | 适用条件 | 入口 |
 |---|---|---|---|
@@ -946,7 +978,7 @@ python3 Tools/mavlink_shell.py /dev/ttyACM0 -b 57600
 <a id="e2"></a>
 ### 11.2 GDB、编辑器调试与崩溃分析
 
-基础启动流程见[阶段 3](#s3)。先调试确定输入的测试，再调试完整 SITL。断点会暂停进程，位置控制等性能问题应使用日志评价。
+基础启动流程见[第 3 章](#s3)。先调试确定输入的测试，再调试完整 SITL。断点会暂停进程，位置控制等性能问题应使用日志评价。
 
 **条件断点与调用上下文。** 在带 Debug 符号的 RateControl 测试中，可先用普通断点确认参数存在，再设条件：
 
@@ -964,7 +996,7 @@ thread apply all bt
 
 优化构建可能内联函数或消除局部变量。先核对构建类型和实际编译参数，再使用 `info line`、`disassemble` 观察映射；不要把 `optimized out` 理解成变量值为零。条件表达式尽量不调用有副作用的函数。
 
-**在容器内使用 VS Code 调试。** 保持编辑器、GDB、二进制和源码在同一个开发容器；按阶段 3 先生成 Debug 二进制与 rootfs。可将下面对象合并到已有 `.vscode/launch.json` 的 `configurations`，不要覆盖其他配置：
+**在容器内使用 VS Code 调试。** 保持编辑器、GDB、二进制和源码在同一个开发容器；按第 3 章先生成 Debug 二进制与 rootfs。可将下面对象合并到已有 `.vscode/launch.json` 的 `configurations`，不要覆盖其他配置：
 
 ```json
 {
@@ -989,7 +1021,7 @@ thread apply all bt
 }
 ```
 
-这是使用 C/C++ 扩展的启动配置。首次在 `WorkItemExample::Run` 或可控启动路径设断点；程序启动后在承载进程的终端输入 PX4 命令，变量和线程在调试面板观察。调试控制台用于调试器表达式，不等同于 PX4 Shell。若终端交互受扩展环境限制，先使用阶段 3 的终端 GDB 完成相同检查。PX4 自带模板在 [launch_sitl.json.in](../platforms/posix/Debug/launch_sitl.json.in)。
+这是使用 C/C++ 扩展的启动配置。首次在 `WorkItemExample::Run` 或可控启动路径设断点；程序启动后在承载进程的终端输入 PX4 命令，变量和线程在调试面板观察。调试控制台用于调试器表达式，不等同于 PX4 Shell。若终端交互受扩展环境限制，先使用第 3 章的终端 GDB 完成相同检查。PX4 自带模板在 [launch_sitl.json.in](../platforms/posix/Debug/launch_sitl.json.in)。
 
 **attach 与容器权限。** 启动一个自己的调试子进程和 attach 已有进程的权限条件不同。attach 前用 `ps` 确认 PID、用户及所在 PID namespace；遇到 ptrace 拒绝，再核对容器 `SYS_PTRACE` 和 seccomp 设置。不要为了一个符号问题直接把容器改成 privileged。
 
@@ -1201,7 +1233,7 @@ param set SYS_FAILURE_EN 1
 failure gps off
 ```
 
-恢复请求为 `failure gps ok`，随后恢复原 `SYS_FAILURE_EN`。没有状态或测量变化时，先确认命令处理与 ACK，不能直接得出“系统容错成功”。SIH 初学实验使用[阶段 7 的 GNSS 质量退化](#s7)，其中修改卫星数与停止发布不是同一故障。
+恢复请求为 `failure gps ok`，随后恢复原 `SYS_FAILURE_EN`。没有状态或测量变化时，先确认命令处理与 ACK，不能直接得出“系统容错成功”。SIH 初学实验使用[第 7 章的 GNSS 质量退化](#s7)，其中修改卫星数与停止发布不是同一故障。
 
 **每个故障场景都写六项**：初始状态、故障作用层、触发时间、预计状态变化、恢复方式、通过判据。按检测信息、估计、模式、目标、输出的顺序保存证据。至少先做地面实验，确认机制确实改变了目标输入，再进入空中仿真。
 
@@ -1256,6 +1288,7 @@ arm-none-eabi-addr2line -e build/px4_fmu-v6x_default/px4_fmu-v6x_default.elf -f 
 
 地址映射可能受优化、内联及内存损坏影响，应结合调用栈、任务、寄存器和触发条件。最终把问题缩到可复现输入；若能在 POSIX 测试复现内存问题，再用 ASan 辅助定位。不能用另一版固件的 ELF 得出可信的源码行。
 
+<a id="diagnostic-workflow"></a>
 ### 11.9 把方法组合成一次有效定位
 
 以“自动任务高度变化异常”为例，先核对任务高程参考和实际模式，再在日志中比较导航/轨迹目标、估计高度及 reset counter；目标本身变化则研究任务与轨迹，估计跳变则研究融合和参考，目标与估计连续而输出受限则研究控制与执行器。
@@ -1518,6 +1551,7 @@ QGC 若运行在 Windows、另一台机器或桥接容器中，localhost 的含�
 | MAVLink/DDS | `mavlink status`、`uxrce_dds_client status` | 建立会话不等于应用逻辑正确 |
 | 历史行为 | `logger status` 与 ULog | 未记录的主题不能事后还原 |
 
+<a id="environment-troubleshooting"></a>
 ### B.5 按失败层定位环境问题
 
 | 症状 | 首先核对 | 下一步 |
@@ -1606,7 +1640,7 @@ git submodule update --init --recursive
 <a id="offboard-example"></a>
 ## 附录 D：Offboard 接口实验程序
 
-此程序配合阶段 8 使用，条件为单机 SIH、正常位置估计、已起飞进入 Hold、已设置并理解断流策略。它最多发送 120 秒的当前位置目标，供研究 MAVLink 掩码、控制信号和模式交接。
+此程序配合本手册第 8 章使用，条件为单机 SIH、正常位置估计、已起飞进入 Hold、已设置并理解断流策略。它最多发送 120 秒的当前位置目标，供研究 MAVLink 掩码、控制信号和模式交接。
 
 先在宿主创建临时实验目录：
 
@@ -1703,6 +1737,6 @@ finally:
 ~/embedded-lab/bin/lab exec px4-main -- python3 build/learning-experiments/hold_stream.py
 ```
 
-按阶段 8 请求 Offboard、确认实际模式，再执行正常退出或断流实验。脚本到期、异常或 Ctrl+C 都会终止目标流；正常实验结束应先确认模式交还，再停流。
+按第 8 章请求 Offboard、确认实际模式，再执行正常退出或断流实验。脚本到期、异常或 Ctrl+C 都会终止目标流；正常实验结束应先确认模式交还，再停流。
 
-位置字段参与控制，速度、加速度、航向和航向速率通过 mask 忽略。教学程序不处理坐标参考重置、完整估计有效性、真实载具识别、自动接管确认或复杂网络时钟同步，不能作为实际飞行应用直接使用。阶段 10 的应用必须把这些条件纳入自己的接口与状态机。
+位置字段参与控制，速度、加速度、航向和航向速率通过 mask 忽略。教学程序不处理坐标参考重置、完整估计有效性、真实载具识别、自动接管确认或复杂网络时钟同步，不能作为实际飞行应用直接使用。综合项目的应用必须把这些条件纳入自己的接口与状态机。
