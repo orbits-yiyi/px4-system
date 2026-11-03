@@ -2,12 +2,15 @@
 
 本仓库围绕完整理解、使用、分析和开发 PX4 组织学习资料，保留对应源码供阅读和实践。
 
-**统一入口：[PX4 系统学习文档](learn/README.md)。** 初次学习先读[整体架构](learn/TECHNICAL.md#c1)，再按[学习路线](learn/ROADMAP.md)完成对应阶段。
+**统一入口：[PX4 系统学习文档](learn/README.md)。** 初次学习先读[当前工程全景导读](learn/PROJECT_GUIDE.md)，再按[学习路线](learn/ROADMAP.md)完成对应阶段。
 
 | 文档 | 内容 |
 |---|---|
+| [当前 PX4 工程全景导读](learn/PROJECT_GUIDE.md) | 从当前仓库出发，系统串起构建启动、运行机制、飞行控制、通信、个人 lab Docker、仿真验证与开发学习 |
+| [技术架构详解：硬件、外设、实现与仿真](learn/ARCHITECTURE.md) | 飞控支持与构建目标、外设需求、接口电气、测量/控制实现、仿真对比与参考系统 |
 | [系统架构与技术原理](learn/TECHNICAL.md) | 物理、硬件、测量、估计、控制、导航、安全与外部应用怎样组成完整系统 |
 | [代码架构与开发指南](learn/DEVELOPMENT.md) | 工程、子模块、构建、启动、调度、接口、核心模块与开发实现 |
+| [开发调试实战](learn/DEBUGGING.md) | lab/VS Code、源码修改、GDB、uORB/日志、测试/性能、应用集成、烧录、SWD 与 HardFault |
 | [系统学习路线](learn/ROADMAP.md) | 各阶段目标、实施任务、通过标准、补足建议及综合项目 |
 | [操作与调试手册](learn/OPERATIONS.md) | 编译、仿真、任务、应用、日志、GDB、回放、测试、性能及板上调试 |
 
