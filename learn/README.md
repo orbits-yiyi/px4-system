@@ -8,10 +8,13 @@
 
 第一课可以只读源码完成，不需要先整理环境报告、运行仿真或通读下面全部文档。学完后再进入路线 1.2，逐步展开刚认识的结构。
 
-## 工程全景与六篇专题文档
+如果读代码时不理解 C++ 声明、模板、引用或类，先查阅 **[C++ 系统学习与语法参考](CPP_GUIDE.md)**；最初的发布器声明可直接看[第 50 章](CPP_GUIDE.md#c50)。
+
+## 工程全景与七篇专题文档
 
 | 文档 | 回答的问题 | 主要内容 |
 |---|---|---|
+| **[C++ 系统学习与语法参考](CPP_GUIDE.md)** | C++ 语法是什么意思，怎样读懂并写出工程代码 | 从类型、初始化、函数和对象，到模板、标准库、并发和现代语法；逐节拆解写法与执行过程，附状态推演、完整示例、索引、练习与 PX4 声明拆解 |
 | **[当前 PX4 工程全景导读](PROJECT_GUIDE.md)** | 当前这份工程怎样组织、运行和开发，各部分怎样连成整机 | 25 章系统串讲：版本与目录、构建启动、运行与接口、完整控制链、其他机型、通信、个人 lab Docker、仿真、调试测试和开发学习顺序 |
 | **[PX4 技术架构详解](ARCHITECTURE.md)** | 支持哪些硬件，需要哪些外设，技术怎样实现，有哪些仿真 | 18 章：飞控/伴随计算机/外设节点、板型与目标、器件组合、接口电气、测量与动力、算法与通信、仿真实现和参考系统 |
 | **[PX4 系统架构与技术原理](TECHNICAL.md)** | PX4 是什么，各部分为什么这样协同 | 系统边界、物理与硬件、运行平台、测量、估计、控制、导航、安全、通信、机型、配置与验证 |
@@ -41,6 +44,7 @@
 | SIH、Gazebo、jMAVSim、JSBSim、HITL 有什么区别 | [仿真体系](ARCHITECTURE.md#simulation)、[仿真实现](ARCHITECTURE.md#simulation-internals) |
 | 从第一次源码修改开始学习开发调试 | [源码练习](DEBUGGING.md#first-change)、[终端 GDB](DEBUGGING.md#gdb)、[VS Code 调试](DEBUGGING.md#vscode-debug) |
 | 需要真机烧录、设备透传、SWD 或故障分析 | [固件部署](DEBUGGING.md#deployment)、[板端调试](DEBUGGING.md#hardware-debug)、[故障速查](DEBUGGING.md#triage) |
+| 看不懂 C++ 类型、花括号、指针、引用或模板 | [C++ 系统总结](CPP_GUIDE.md)、[符号速查](CPP_GUIDE.md#c53)、[PublicationData 拆解](CPP_GUIDE.md#c50) |
 | 看不懂 PX4 全局，功能为什么分成这些层 | [整体架构](TECHNICAL.md#c1)与[任务生命周期](TECHNICAL.md#c8) |
 | 子仓库是什么、版本怎样选择 | [目录与依赖](DEVELOPMENT.md#d2) |
 | 源码怎样变成程序，又怎样运行 | [构建](DEVELOPMENT.md#d3)、[启动](DEVELOPMENT.md#d4)、[执行模型](DEVELOPMENT.md#d5) |
