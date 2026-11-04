@@ -1,0 +1,12 @@
+Internal ctest changing into directory: /home/yiyi/Workspace/px4/PX4-Autopilot/build/px4_course_test
+Test project /home/yiyi/Workspace/px4/PX4-Autopilot/build/px4_course_test
+    Start  56: unit-rate_control_test
+1/3 Test  #56: unit-rate_control_test ...........   Passed    0.01 sec
+    Start  90: unit-test_EKF_height_fusion
+2/3 Test  #90: unit-test_EKF_height_fusion ......   Passed    7.42 sec
+    Start 113: unit-PositionControl
+3/3 Test #113: unit-PositionControl .............   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   7.44 sec

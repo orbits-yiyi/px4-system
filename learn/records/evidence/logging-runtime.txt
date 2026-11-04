@@ -1,0 +1,24 @@
+$ learn_status start
+
+$ logger stop
+
+$ logger start -f
+
+$ param set LEARN_PERIOD 200
+  LEARN_PERIOD: curr: 100 -> new: 200
+
+$ logger status
+INFO  [logger] Running in mode: all
+INFO  [logger] Number of subscriptions: 20 (640 bytes)
+INFO  [logger] Full File Logging Running:
+INFO  [logger] Log file: ./log/sess100/log100.ulg
+INFO  [logger] Wrote 40.06 KiB (avg  6.79 KiB/s)
+INFO  [logger] Since last status: dropouts: 0 (max len: 0.000 s), max used buffer: 6392 / 12288 B
+
+$ logger stop
+
+$ learn_status stop
+
+$ param set LEARN_PERIOD 100
++ LEARN_PERIOD: curr: 200 -> new: 100
+

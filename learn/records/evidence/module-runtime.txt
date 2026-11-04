@@ -1,0 +1,99 @@
+$ learn_status status
+INFO  [learn_status] not running
+$ param show -q LEARN_PERIOD
+100
+$ param set LEARN_PERIOD 100
+
+$ learn_status start
+
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775096000 (0.008000 seconds ago)
+    sample_count: 1
+    period_us: 100000
+    requested_period_ms: 100
+    period_limited: False
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775396000 (0.060000 seconds ago)
+    sample_count: 4
+    period_us: 100000
+    requested_period_ms: 100
+    period_limited: False
+$ param set LEARN_PERIOD 200
+  LEARN_PERIOD: curr: 100 -> new: 200
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775396000 (0.076000 seconds ago)
+    sample_count: 4
+    period_us: 100000
+    requested_period_ms: 100
+    period_limited: False
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775500000 (0.096000 seconds ago)
+    sample_count: 6
+    period_us: 200000
+    requested_period_ms: 200
+    period_limited: False
+$ param set LEARN_PERIOD -1
+* LEARN_PERIOD: curr: 200 -> new: -1
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775500000 (0.112000 seconds ago)
+    sample_count: 6
+    period_us: 200000
+    requested_period_ms: 200
+    period_limited: False
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775736000 (0.004000 seconds ago)
+    sample_count: 10
+    period_us: 20000
+    requested_period_ms: -1
+    period_limited: True
+$ param set LEARN_PERIOD 100
+* LEARN_PERIOD: curr: -1 -> new: 100
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 775756000 (0.000000 seconds ago)
+    sample_count: 11
+    period_us: 100000
+    requested_period_ms: 100
+    period_limited: False
+$ learn_status stop
+
+$ listener learn_status -n 1
+never published
+$ listener learn_status -n 1
+never published
+$ learn_status start
+
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 776232000 (0.052000 seconds ago)
+    sample_count: 2
+    period_us: 100000
+    requested_period_ms: 100
+    period_limited: False
+PASS: publication, parameter update, clamp, stop and restart
+$ learn_status stop
+
+$ param set LEARN_PERIOD 100
+

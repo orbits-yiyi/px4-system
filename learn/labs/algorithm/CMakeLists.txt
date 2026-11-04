@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(px4_learning_algorithms LANGUAGES CXX)
+enable_testing()
+add_executable(learning_algorithms_test tests.cpp)
+target_compile_features(learning_algorithms_test PRIVATE cxx_std_14)
+target_compile_options(learning_algorithms_test PRIVATE -Wall -Wextra -Werror)
+add_test(NAME learning_algorithms COMMAND learning_algorithms_test)

@@ -1,0 +1,127 @@
+$ mc_pos_control status
+INFO  [mc_pos_control] running
+
+$ work_queue status
+
+Work Queue: 5  threads                          RATE        INTERVAL
+|__ 1) wq:rate_ctrl    
+|   |__ 1) control_allocator                250.1 Hz         3999 us
+|   |__ 2) mc_rate_control                  250.1 Hz         3999 us
+|   |__ 3) pwm_out_sim                      246.1 Hz         4063 us
+|   \__ 4) vehicle_angular_velocity         250.2 Hz         3997 us
+|__ 2) wq:nav_and_controllers
+|   |__ 1) flight_mode_manager               50.1 Hz        19951 us
+|   |__ 2) land_detector                    125.1 Hz         7994 us
+|   |__ 3) mc_att_control                   250.1 Hz         3998 us
+|   |__ 4) mc_hover_thrust_estimator        125.0 Hz         8003 us
+|   |__ 5) mc_pos_control                   125.0 Hz         8000 us
+|   |__ 6) sensors                          249.7 Hz         4004 us
+|   |__ 7) vehicle_acceleration             249.9 Hz         4001 us
+|   |__ 8) vehicle_air_data                  22.8 Hz        43862 us
+|   |__ 9) vehicle_gps_position               8.1 Hz       123097 us
+|   \__10) vehicle_magnetometer              47.3 Hz        21161 us
+|__ 3) wq:INS0         
+|   |__ 1) ekf2                             249.8 Hz         4003 us
+|   \__ 2) vehicle_imu                      250.1 Hz         3999 us
+|__ 4) wq:hp_default   
+|   |__ 1) battery_simulator                100.1 Hz         9989 us (10000 us)
+|   |__ 2) gyro_fft                          62.6 Hz        15983 us
+|   |__ 3) manual_control                     5.1 Hz       197724 us
+|   |__ 4) mc_autotune_attitude_control       0.2 Hz      5222000 us
+|   |__ 5) rc_update                          0.0 Hz            0 us
+|   |__ 6) sensor_baro_sim                   20.2 Hz        49467 us (50000 us)
+|   |__ 7) sensor_gps_sim                     8.1 Hz       123130 us (125000 us)
+|   |__ 8) sensor_mag_sim                    50.1 Hz        19979 us (20000 us)
+|   |__ 9) system_power_simulator           100.1 Hz         9989 us (10000 us)
+|   \__10) tone_alarm                         0.9 Hz      1148400 us
+\__ 5) wq:lp_default   
+    |__ 1) gyro_calibration                  50.1 Hz        19979 us (20000 us)
+    |__ 2) load_mon                           2.1 Hz       472000 us (500000 us)
+    |__ 3) parameters                         0.2 Hz      4786000 us
+    \__ 4) payload_deliverer                 10.1 Hz        98632 us (100000 us)
+
+$ listener vehicle_control_mode -n 1
+
+TOPIC: vehicle_control_mode
+ vehicle_control_mode
+    timestamp: 11476000 (0.100000 seconds ago)
+    flag_armed: False
+    flag_multicopter_position_control_enabled: True
+    flag_control_manual_enabled: False
+    flag_control_auto_enabled: True
+    flag_control_offboard_enabled: False
+    flag_control_position_enabled: True
+    flag_control_velocity_enabled: True
+    flag_control_altitude_enabled: True
+    flag_control_climb_rate_enabled: True
+    flag_control_acceleration_enabled: False
+    flag_control_attitude_enabled: True
+    flag_control_rates_enabled: True
+    flag_control_allocation_enabled: True
+    flag_control_termination_enabled: False
+    source_id: 0
+
+
+$ listener vehicle_local_position -n 1
+
+TOPIC: vehicle_local_position
+ vehicle_local_position
+    timestamp: 11580000 (0.004000 seconds ago)
+    timestamp_sample: 11580000 (0 us before timestamp)
+    ref_timestamp: 780000
+    ref_lat: 47.397741
+    ref_lon: 8.545596
+    x: 0.30627
+    y: -0.14559
+    z: -0.14194
+    delta_xy: [0.03150, 0.15785]
+    delta_z: -489.13907
+    vx: -0.00839
+    vy: -0.00235
+    vz: 0.00673
+    z_deriv: 0.00683
+    delta_vxy: [0.16677, -0.05942]
+    delta_vz: -0.00966
+    ax: 0.05895
+    ay: -0.04422
+    az: -0.04451
+    heading: -0.00231
+    heading_var: 0.03559
+    unaided_heading: -0.00005
+    delta_heading: -0.00390
+    tilt_var: 0.00080
+    ref_alt: 489.13370
+    dist_bottom: 0.00894
+    dist_bottom_var: 0.00250
+    delta_dist_bottom: -489.13907
+    eph: 0.29217
+    epv: 0.05490
+    evh: 0.15674
+    evv: 0.03360
+    vxy_max: inf
+    vz_max: inf
+    hagl_min: inf
+    hagl_max_z: inf
+    hagl_max_xy: inf
+    xy_valid: True
+    z_valid: True
+    v_xy_valid: True
+    v_z_valid: True
+    xy_reset_counter: 5
+    z_reset_counter: 2
+    vxy_reset_counter: 4
+    vz_reset_counter: 2
+    heading_reset_counter: 1
+    heading_good_for_control: False
+    xy_global: True
+    z_global: True
+    dist_bottom_valid: True
+    dist_bottom_reset_counter: 2
+    dist_bottom_sensor_bitfield: 1
+    dead_reckoning: False
+
+$ work_item_example status
+INFO  [work_item_example] not running
+
+$ shutdown 
+

@@ -1,0 +1,12 @@
+[==========] Running 1 test from 1 test suite.
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+Test time =   0.01 sec
+[==========] Running 9 tests from 1 test suite.
+[==========] 9 tests from 1 test suite ran. (7414 ms total)
+[  PASSED  ] 9 tests.
+Test time =   7.42 sec
+[==========] Running 17 tests from 3 test suites.
+[==========] 17 tests from 3 test suites ran. (2 ms total)
+[  PASSED  ] 17 tests.
+Test time =   0.01 sec

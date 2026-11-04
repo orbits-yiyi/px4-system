@@ -1,8 +1,16 @@
 # PX4 开发调试实战：从源码修改到板端故障定位
 
-[学习首页](README.md) · [硬件与技术架构](ARCHITECTURE.md) · [当前工程全景导读](PROJECT_GUIDE.md) · [代码架构与开发指南](DEVELOPMENT.md) · [操作手册](OPERATIONS.md)
+本文作为**问题诊断与调试工具参考**。连续学习入口是[实战主文档](WORKBOOK.md)，当前环境与实际验证以[实施记录](records/IMPLEMENTATION.md)为准。
+
+[学习首页](README.md) · [从零系统导读](SYSTEM_GUIDE.md) · [硬件与技术架构](ARCHITECTURE.md) · [当前工程全景导读](PROJECT_GUIDE.md) · [代码架构与开发指南](DEVELOPMENT.md) · [操作手册](OPERATIONS.md)
 
 本文提供一条可操作的开发调试路线：建立版本和环境基线，完成一次源码修改，选择正确的调试工具，用数据定位问题，再验证和保存结果。每段命令都说明执行环境；不仅说明“输入什么”，也说明“应该看到什么，以及没有看到时查哪里”。
+
+**第一次调试从[第 0 章](#first-debug)与[可执行 GDB 实验](WORKBOOK.md#debug-lab)开始。** 先核对实际程序，再命中断点、读取变量并与消息对应；不依赖已删除的工作区文件。
+
+**如果困惑的是“每次启动到底有哪些代码参与”，先看[当前启动的源码地图](SYSTEM_GUIDE.md#startup-code)。** 它把 F5 配置、`main.cpp`、`rcS`、机型脚本、模块命令和 C++ 执行函数逐项对应，并给出从启动入口开始的断点位置。
+
+如果还不能区分仿真器、PX4 模块、消息接口和调试器，先看[系统导读中的仿真概念](SYSTEM_GUIDE.md#simulation-basics)、[内部接口](SYSTEM_GUIDE.md#uorb)与[调试方法](SYSTEM_GUIDE.md#debugging)，再按本篇深入实践。
 
 **依据：2026-11-02，本仓库 `learn/px4-v1.17.0`，提交 `3e4c67df8a1518a13ca661f06d9ff8cb8393009b`，以及本机 `embedded-lab` 的 `px4-main` 任务。** 下文实验供读者实施，本次文档编写未执行源码练习、重编译、仿真飞行或硬件烧录。历史验证与当前分支的区别见 [PROJECT_GUIDE](PROJECT_GUIDE.md#environment)。
 
@@ -10,12 +18,54 @@
 
 | 目的 | 章节 |
 |---|---|
+| 不知道本次启动经过哪些文件、断点应放在哪里 | [启动源码地图与函数对应表](SYSTEM_GUIDE.md#startup-code) |
+| 第一次调试，不清楚软件和窗口怎样配合 | [0. 逐步操作](#first-debug)：工具与窗口、GDB 启动、断点、单步、读回消息与退出 |
+| `px4-sih-debug.code-workspace` 是什么、配置怎样生效、能否删除 | [3.5～3.9：工作区文件详解与替代操作](#workspace-explained) |
 | 建立开发闭环 | [1. 工作方法](#workflow)、[2. lab 与编译](#environment)、[3. VS Code 与索引](#editor)、[4. 第一次源码修改](#first-change) |
 | 看懂运行与断点 | [5. 控制台和模块](#runtime)、[6. 终端 GDB](#gdb)、[7. VS Code 调试](#vscode-debug) |
 | 分析数据和算法 | [8. uORB 与参数](#data)、[9. ULog 与埋点](#logging)、[10. 单元测试与分析工具](#testing)、[11. 性能与资源](#performance) |
 | 调试集成与仿真 | [12. MAVLink/ROS 2/Offboard](#integration)、[13. 仿真、故障与 Replay](#simulation) |
 | 上实体飞控 | [14. 固件与设备部署](#deployment)、[15. 板端控制台、SWD 与 HardFault](#hardware-debug) |
 | 形成自己的能力 | [16. 开发不同功能](#extension)、[17. 故障速查](#triage)、[18. 保存成果与练习顺序](#evidence) |
+
+<a id="first-debug"></a>
+## 0. 第一次调试：从一个问题到断点和消息
+
+当前统一操作入口是[第一次源码调试实验](WORKBOOK.md#debug-lab)。它给出构建、终端 GDB 启动、断点、变量、单步、继续、消息核对和退出的完整步骤，并提供 VS Code 等价操作。没有 `px4-sih-debug.code-workspace` 也可以完成。
+
+### 0.1 先确定本次问题
+
+以教学模块 `learn_status` 为例：参数 100 ms 怎样变为 100000 us，哪个线程执行 Run，停止时如何清理？源码与可运行实现见[第 06 课](WORKBOOK.md#c06)，构建命令见[实验入口](WORKBOOK.md#build-example)。
+
+### 0.2 软件和窗口的职责
+
+| 对象 | 做什么 | 不能由它单独证明什么 |
+|---|---|---|
+| Linux/容器 Shell | 编译、启动 GDB、运行检查脚本 | 某算法分支执行 |
+| VS Code | 编辑、索引、组织任务与调试界面 | 真实运行用了哪份二进制 |
+| GDB | 加载符号、断点、调用栈、单步 | 不暂停时的连续性能 |
+| PX4 Shell | 调用模块、参数、listener、状态命令 | 输出一定已被下游消费 |
+| QGC | 地面站遥测、配置和任务协议 | 源码是否重新编译 |
+| SIH / Gazebo | 提供动力学和模拟测量 | 真机总线与硬件时序 |
+
+### 0.3 第一次操作应得到什么
+
+按[调试实验](WORKBOOK.md#debug-lab)在 `LearnStatus::Run` 命中，读取 `_sample_count`，沿发布行单步，再禁用断点继续。用 listener 比较相同字段；结束模块和程序后重新构建一个可预测改动，再复现。源码保存不会改变旧进程。
+
+先看提示符：`(gdb)` 输入调试命令，`pxh>` 输入 PX4 命令，`$` 输入系统 Shell 命令。VS Code Debug Console 也不是 PX4 命令终端。F5 在暂停状态表示继续，不会自动重建正在运行的进程。
+
+### 0.4 卡住时的下一步
+
+| 画面/现象 | 检查与下一步 |
+|---|---|
+| 找不到 gdb | 在实际构建环境检查工具，避免宿主/容器错位 |
+| 断点为空心/符号找不到 | program、Debug 产物、源路径、是否编入 |
+| Run 不命中 | 模块是否启动、调度是否推进、是否等待消息 |
+| 发布行不命中 | Run 中提前退出/条件分支；不要一律重装环境 |
+| 高频反复停止 | 禁用已观察断点后继续，用日志测时间序列 |
+| 工作区菜单不存在 | 使用当前 GDB 实验或已有生成配置，无需恢复历史文件 |
+
+完成记录要包含实际程序、调用栈、变量、消息和恢复。作者本次运行范围在[实施记录](records/IMPLEMENTATION.md)，板端与其他环境另行验证。
 
 <a id="workflow"></a>
 ## 1. 一次有效开发应当形成什么闭环
@@ -200,6 +250,152 @@ PY
 当前 [platforms/posix/CMakeLists.txt](../platforms/posix/CMakeLists.txt) 在 SITL 配置阶段把调试模板复制到源码的 `.vscode/launch.json`。所以手工加入的配置可能在重新配置后被覆盖。
 
 保存自定义配置的原始片段；可以在自己的 VS Code 工作区配置中管理独立 `launch` 设置，或者在完成构建后重新合并需要的配置。调整上游模板属于另一类源码改动，应有明确目的并单独审阅。
+
+<a id="workspace-explained"></a>
+### 3.5 `px4-sih-debug.code-workspace` 到底是什么
+
+**它曾是教程提供的可选 VS Code 配置，目前已经删除，不需要恢复。** 下面保留历史字段设计的解释，便于理解同类文件。删除只移除该文件提供的设置、任务与调试入口；当前操作使用[终端实验](WORKBOOK.md#debug-lab)或已有 VS Code 配置。
+
+文件名中的 `px4` 表示项目，`sih` 表示这套配置选择的仿真方式，`debug` 表示用途；这些都是人为命名。`.code-workspace` 是 VS Code 识别的工作区文件扩展名，内容按 JSON/JSONC 格式组织。历史示例使用不带注释的 JSON。它可以保存多个源码目录，本例只登记一个 PX4 根目录，并没有复制源码或创建第二套 PX4。
+
+**谁读取它？** VS Code 读取工作区、设置和任务；Microsoft C/C++ 扩展处理 `cppdbg` 调试配置；CMake Tools 和 C/C++ 扩展读取各自的设置。PX4 的 CMake 构建入口、`bin/px4` 和飞控板都不读取这个文件。
+
+**什么时候生效？** 在 VS Code 中使用 **File → Open Workspace from File…** 打开它以后，工作区设置与任务才进入相应作用范围。仅在编辑器中打开文件查看 JSON，不等于切换到该工作区；仅打开源码文件夹，也不会自动加载 `learn/` 下这个文件的配置。
+
+**为什么新增它？** 当前仓库的 [POSIX CMake 配置](../platforms/posix/CMakeLists.txt) 会根据目标，把 [SITL 调试模板](../platforms/posix/Debug/launch_sitl.json.in)等复制到 `.vscode/launch.json`。将教学配置单独保存在工作区中，可以保留明确的构建目标、程序路径与模型选择，并避开这一步生成操作对自定义调试条目的覆盖。
+
+### 3.6 五个顶层部分分别控制什么
+
+以下表格解释历史示例采用的字段，不要求打开一个当前不存在的文件。路径里的 `${workspaceFolder:PX4-Autopilot}` 由 VS Code 展开，不是 Bash 环境变量，也不是 C++ 代码。
+
+| 部分和字段 | 当前含义 | 修改时影响什么 |
+|---|---|---|
+| `folders` → `name: PX4-Autopilot` | 给源码目录一个工作区名称，供资源管理器和变量引用使用 | 改名后要同时修改 `${workspaceFolder:PX4-Autopilot}` 引用 |
+| `folders` → `path: ..` | 相对于这个工作区文件所在的 `learn/`，向上一层得到仓库根目录 | 移动文件位置后要重新计算相对路径；与终端当前目录无关 |
+| `settings` → `cmake.configureOnOpen: false` | 关闭 CMake Tools 打开工程时自动配置的行为 | 不影响手动 `make`、CMake 配置或 F5 的构建任务 |
+| `settings` → `C_Cpp.default.compileCommands` | 为 C/C++ 扩展提供当前 SITL 的编译数据库位置，帮助解析宏和头文件 | 改变索引配置，不会因此改变实际编译目标；provider 等配置仍需按第 3.3 节核对 |
+| `extensions` → `recommendations` | 推荐安装 `ms-vscode.cpptools`，即 Microsoft C/C++ 扩展 | 推荐项不等于扩展已经安装，也不负责安装编译器和 GDB |
+| `tasks` | 定义一个可重复执行的构建任务 | 决定构建时运行什么命令，以及怎样展示输出 |
+| `launch` | 定义一项由调试器启动 PX4 的配置 | 决定运行哪个程序、带哪些参数和环境变量 |
+
+历史示例没有 Docker 镜像、容器服务或 Dev Containers 连接定义。在已连接的容器窗口中，这些路径和工具在容器中解析；在宿主窗口打开时，就按宿主环境解析。工作区文件本身不会把宿主自动变成开发容器。只有打开文件，也不会自动启动 PX4；当前配置需要显式运行任务或开始调试。
+
+`cmake.configureOnOpen` 还在源码目录的 `.vscode/settings.json` 中设为 `false`。工作区和文件夹设置有不同作用范围；支持文件夹覆盖的同名设置要考虑文件夹层，不能只读工作区中的值判断最终结果。
+
+### 3.7 构建任务与调试配置逐项解释
+
+下面按历史示例的任务说明字段；你现在使用的条目以实际配置为准：
+
+| 字段 | 作用 |
+|---|---|
+| `version: 2.0.0` | VS Code 任务配置格式版本，与 PX4 版本无关 |
+| `label: PX4: build SITL Debug` | 任务的名称；调试配置通过这个名称找到它 |
+| `type: process`、`command: make` | 直接启动 `make` 进程，并把 `args` 中每一项作为参数传入 |
+| `args` 中的 `-j6` | 请求并行构建；本教程按当前 lab 的资源约定选取 6 |
+| `args` 中的 `px4_sitl_default` | 选择电脑端 SITL 默认构建目标，决定编入的模块和平台 |
+| `PX4_CMAKE_BUILD_TYPE=Debug` | 由仓库 Makefile 传给 CMake，选择 Debug 构建类型 |
+| `PX4_MAKE_ARGS=-j6` | 向底层构建工具传递并行参数，含义以当前 Makefile 的生成器分支为准 |
+| `options.cwd` | 让 `make` 在 PX4 仓库根目录执行 |
+| `problemMatcher: $gcc` | 把可识别的编译器错误、警告关联到 VS Code Problems 面板；不负责验证飞行行为 |
+| `presentation.reveal: always` | 运行任务时显示任务终端 |
+| `presentation.panel: dedicated`、`clear: false` | 为这个任务复用专用终端，并保留已有输出 |
+
+因此它的主要动作等同于在仓库根目录执行：
+
+```bash
+make -j6 px4_sitl_default PX4_CMAKE_BUILD_TYPE=Debug PX4_MAKE_ARGS=-j6
+```
+
+**构建目标和仿真模型属于不同层。** 这条命令构建 SITL 程序；下面 `launch.environment` 再选择运行时使用 SIH 四旋翼。只修改显示名称中的 “SIH” 不会更换模拟器。
+
+再看 `launch` 中的配置：
+
+| 字段 | 作用 |
+|---|---|
+| `version: 0.2.0` | VS Code 调试配置格式版本，与 PX4 版本无关 |
+| `name: PX4 first debug: SIH` | 显示在 Run and Debug 下拉框中的名称，可用于区分不同启动方式 |
+| `type: cppdbg` | 使用 Microsoft C/C++ 扩展提供的 GDB/LLDB 调试适配器 |
+| `request: launch` | 由调试器新启动一个程序；这里没有附加到其他终端已经运行的 PX4 |
+| `preLaunchTask` | 启动调试前执行同名构建任务，名称须与 `tasks` 中的 `label` 对应 |
+| `program` | 指定实际被调试的 `build/px4_sitl_default/bin/px4` 可执行文件 |
+| `args` | 把 `ROMFS/px4fmu_common` 路径传给 PX4，提供启动脚本等资源；这里不传编译器参数 |
+| `cwd` | PX4 的运行目录，当前为目标的 `rootfs`；相对参数文件、日志等受运行目录影响 |
+| `MIMode: gdb`、`miDebuggerPath: /usr/bin/gdb` | 选择 GDB，并明确调试器的可执行文件位置 |
+| `miDebuggerArgs: -nx` | 让 GDB 忽略自动初始化文件，避免当前生成的 `.gdbinit` 提前执行 `run` |
+| `externalConsole: false` | 使用 VS Code 内部的终端承载方式；交互能力还取决于扩展和远程环境 |
+| `internalConsoleOptions: neverOpen` | 不自动弹出 Debug Console，不会关闭 PX4 终端 |
+| `stopAtEntry: false` | 不要求在程序入口自动暂停；显式设置的断点仍然生效 |
+| `environment` → `PX4_SIM_MODEL=sihsim_quadx` | 选择模型名称；正常未被其他入口覆盖时，对应机型编号 10040 |
+| `environment` → `PX4_SIMULATOR=sihsim` | 选择 SIH 仿真启动分支；其他继承环境和保存参数仍应按启动脚本核对 |
+| `setupCommands` → `-enable-pretty-printing` | 启用 GDB 支持的美化显示，便于查看复杂变量；此项失败允许继续 |
+| `setupCommands` → `handle SIGCONT nostop noprint nopass` | 按 PX4 的调试约定，不因该信号暂停、打印或把它传给被调试程序；当前配置不忽略此命令执行失败 |
+
+`setupCommands` 中的 `text` 是交给调试器的命令，`ignoreFailures` 决定适配器是否忽略该条命令执行失败。这里的设置不会自动忽略 PX4 模块报错。
+
+这个文件也没有 `work_item_example start`：F5 启动的是整套选定的 PX4 仿真，教学模块由你之后在 `pxh>` 中手动启动。
+
+### 3.8 按 F5 时，各软件实际怎样配合
+
+当没有活动调试会话，并选中 `PX4 first debug: SIH` 时：
+
+```text
+VS Code 读取当前选中的 launch 配置
+  → 找到 preLaunchTask 指定的构建任务
+  → 在仓库根目录启动 make
+  → PX4 的 Makefile/CMake/底层构建工具生成 bin/px4
+  → C/C++ 调试适配器启动 /usr/bin/gdb
+  → 设置调试参数、程序参数、运行目录与环境变量
+  → GDB 启动 bin/px4
+  → PX4 执行 main()、启动脚本并启动模块
+```
+
+调试器负责断点和单步，PX4 的脚本与模块实现负责运行行为。这份配置把这些工具连接起来，没有把它们的功能实现放进 JSON 中。调试已经暂停时，**F5 表示继续运行**，不会重新编译；修改源码后要结束当前会话，再启动新会话才能使用新产物。
+
+仓库自带的 `.vscode/launch.json` 也提供 SIH 入口。当前生成的配置名为 `SITL (sihsim_quadx SYS_AUTOSTART=10040)`，通过 `${command:cmake.launchTargetPath}` 和 `${command:cmake.buildDirectory}` 获取路径，并设置 `PX4_SYS_AUTOSTART=10040`。使用它需要核对 CMake Tools 当前选择的目标、构建目录以及对应任务。它与本教程工作区是两种可选入口，名称和设置不能混用。
+
+### 3.9 能否删除，删除以后怎样操作
+
+**可以删除，当前已经删除。** 本节解释删除影响；当前推荐的完整替代操作在[调试实验](WORKBOOK.md#debug-lab)。
+
+| 对象 | 删除工作区文件后的影响 |
+|---|---|
+| 这份文件定义的目录集合、设置、任务与调试入口 | 文件无法再被打开加载；正在打开的窗口可能暂时保留内存状态，关闭工作区再按文件夹打开后核对 |
+| `PX4 first debug: SIH` 和 `PX4: build SITL Debug` | 失去这份文件提供的定义；同名条目若被另存到其他配置，则按那份配置生效 |
+| PX4 源码、Kconfig、CMake、启动脚本、SIH 模块 | 保留，仍可通过现有构建与运行命令使用 |
+| `build/px4_sitl_default` 中的程序、缓存、参数和日志 | 保留；删除工作区不会清理它们，也不会把 Debug 构建自动切回其他类型 |
+| `.vscode/settings.json`、`.vscode/launch.json`、`.vscode/tasks.json` | 保留；特别是文件夹中的 `cmake.configureOnOpen: false` 仍然生效 |
+| Docker、lab 配置与已安装扩展 | 保留；工作区文件不是这些工具的安装或卸载入口 |
+| 已启动的 PX4/GDB 进程 | 删除文件本身不能当作正常退出操作；先按当前会话的退出步骤结束调试 |
+| 当前课程与第 0 章 | 已使用终端 GDB 和现存配置，不依赖历史文件 |
+
+如果选择删除，先正常结束当前调试，再关闭这个工作区，使用 **File → Open Folder…** 打开 PX4 源码目录；远程开发时仍需保留正确的容器连接。随后选用已有入口，或者按下面的终端方式完成相同的构建和 GDB 启动。移动或改名工作区文件时，也要更新文档链接与 `folders.path` 等路径引用。
+
+**不依赖这个文件的终端方式**：在已具备工具的 **lab 容器 Bash** 中执行，启动前结束其他占用同一实例和运行目录的 PX4：
+
+```bash
+cd /workspaces/PX4-Autopilot
+make -j6 px4_sitl_default PX4_CMAKE_BUILD_TYPE=Debug PX4_MAKE_ARGS=-j6
+```
+
+构建成功后再执行：
+
+```bash
+cd /workspaces/PX4-Autopilot/build/px4_sitl_default/rootfs
+env PX4_SIM_MODEL=sihsim_quadx PX4_SIMULATOR=sihsim \
+  gdb -nx --args ../bin/px4 /workspaces/PX4-Autopilot/ROMFS/px4fmu_common
+```
+
+在 **GDB 的 `(gdb)` 提示符**下输入：
+
+```text
+handle SIGCONT nostop noprint nopass
+break WorkItemExample::Run
+run
+```
+
+出现 **PX4 的 `pxh>` 提示符**后输入 `work_item_example start`，再按[第 6 章](#gdb)查看调用栈、单步、继续和退出。这里给出的是与工作区相同的主要构建、模型和调试器选择；界面显示方式不同，也不代表已经在本次会话实测成功。
+
+字段解释依据本基线 Makefile、CMake 和 VS Code 配置语义；当前实验结果与限制统一见[实施记录](records/IMPLEMENTATION.md)。
 
 <a id="first-change"></a>
 ## 4. 第一次源码修改：验证“修改、编译、运行”真的连起来
@@ -411,6 +607,8 @@ gdb -nx /absolute/path/to/matching/px4 /absolute/path/to/core
 ## 7. VS Code 图形调试配置
 
 ### 7.1 一个与本机路径匹配的 SIH 配置
+
+第一次使用时先完成[终端调试实验](WORKBOOK.md#debug-lab)，再用下方对象理解或整合图形配置。当前不存在专用教学 workspace；检查真实 program、cwd、模型与构建任务。
 
 先完成 Debug 构建，并按第 3.4 节处理配置重生成问题。将下面对象加入调试配置的 `configurations` 数组，保留已有条目：
 

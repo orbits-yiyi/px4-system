@@ -1,0 +1,63 @@
+Signal        Stop	Print	Pass to program	Description
+SIGCONT       No	No	No		Continued
+Temporary breakpoint 1 at 0xd0582f: file /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp, line 794.
+Temporary breakpoint 2 at 0xd01afa: file /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp, line 61.
+Starting program: /home/yiyi/Workspace/px4/PX4-Autopilot/build/px4_course/bin/px4 -d -i 81 -w /tmp/px4-course-control-run /home/yiyi/Workspace/px4/PX4-Autopilot/ROMFS/px4fmu_common
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[Detaching after vfork from child process 75275]
+[Switching to Thread 0x7fffe67fc6c0 (LWP 75487)]
+
+Thread 118 "px4" hit Temporary breakpoint 1, mc_pos_control_main (argc=1643451214, argv=0x555556dd67a8 <px4_daemon::Pxh::_apps[abi:cxx11]+8>) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:794
+794	{
+795		return MulticopterPositionControl::main(argc, argv);
+$1 = 2
+$2 = 0x7fffb8000fe0 "mc_pos_control"
+$3 = 0x7fffb8001000 "start"
+#0  mc_pos_control_main (argc=2, argv=0x7fffb8006270) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:795
+#1  0x0000555556420765 in px4_daemon::Pxh::process_line (line=..., silently_fail=true) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/posix/src/px4/common/px4_daemon/pxh.cpp:113
+#2  0x000055555642544f in px4_daemon::Server::_handle_client (arg=0x7ffff0000f20) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/posix/src/px4/common/px4_daemon/server.cpp:283
+#3  0x00007ffff789cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#4  0x00007ffff7929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+Continuing.
+
+Thread 118 "px4" hit Temporary breakpoint 2, MulticopterPositionControl::init (this=0x7fffb800a080) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:61
+61	{
+#0  MulticopterPositionControl::init (this=0x7fffb800a080) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:61
+#1  0x0000555556259696 in MulticopterPositionControl::task_spawn (argc=1, argv=0x7fffb8006278) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:748
+#2  0x000055555625d61d in ModuleBase<MulticopterPositionControl>::start_command_base (argc=1, argv=0x7fffb8006278) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/common/include/px4_platform_common/module.h:209
+#3  0x000055555625c578 in ModuleBase<MulticopterPositionControl>::main (argc=2, argv=0x7fffb8006270) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/common/include/px4_platform_common/module.h:140
+#4  0x0000555556259851 in mc_pos_control_main (argc=2, argv=0x7fffb8006270) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:795
+#5  0x0000555556420765 in px4_daemon::Pxh::process_line (line=..., silently_fail=true) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/posix/src/px4/common/px4_daemon/pxh.cpp:113
+(More stack frames follow...)
+Temporary breakpoint 3 at 0x555556258163: file /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp, line 452.
+Continuing.
+[Switching to Thread 0x7ffff7be9cc0 (LWP 75455)]
+
+Thread 100 "wq:manager" hit Temporary breakpoint 3, MulticopterPositionControl::Run (this=0x7fffb800a080) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:452
+452			if (_vehicle_control_mode.flag_multicopter_position_control_enabled
+#0  MulticopterPositionControl::Run (this=0x7fffb800a080) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:452
+#1  0x000055555641dafa in px4::WorkQueue::Run (this=0x7ffff7be92d0) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/common/px4_work_queue/WorkQueue.cpp:188
+#2  0x000055555641ee50 in px4::WorkQueueRunner (context=0x5555569e1ca0 <px4::wq_configurations::nav_and_controllers>) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/common/px4_work_queue/WorkQueueManager.cpp:238
+#3  0x00007ffff789cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#4  0x00007ffff7929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+$4 = true
+$5 = false
+$6 = 248000
+$7 = false
+$8 = 248000
+$9 = 244000
+453			    && (_setpoint.timestamp >= _time_position_control_enabled)) {
+Temporary breakpoint 4 at 0x555556258adf: file /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp, line 574.
+Continuing.
+
+Thread 100 "wq:manager" hit Temporary breakpoint 4, MulticopterPositionControl::Run (this=0x7fffb800a080) at /home/yiyi/Workspace/px4/PX4-Autopilot/src/modules/mc_pos_control/MulticopterPositionControl.cpp:574
+574				if (_control.update(dt)) {
+$10 = 0.0399999991
+$11 = {position = {<matrix::Vector<float, 3>> = {<matrix::Matrix<float, 3, 1>> = {_data = {{nan(0x400000)}, {nan(0x400000)}, {nan(0x400000)}}}, <No data fields>}, <No data fields>}, velocity = {<matrix::Vector<float, 3>> = {<matrix::Matrix<float, 3, 1>> = {_data = {{nan(0x400000)}, {nan(0x400000)}, {nan(0x400000)}}}, <No data fields>}, <No data fields>}, acceleration = {<matrix::Vector<float, 3>> = {<matrix::Matrix<float, 3, 1>> = {_data = {{nan(0x400000)}, {nan(0x400000)}, {nan(0x400000)}}}, <No data fields>}, <No data fields>}, yaw = -0.000685788807}
+$12 = {timestamp = 248000, position = {nan(0x400000), nan(0x400000), nan(0x400000)}, velocity = {nan(0x400000), nan(0x400000), nan(0x400000)}, acceleration = {0, 0, 100}, jerk = {nan(0x400000), nan(0x400000), nan(0x400000)}, yaw = nan(0x400000), yawspeed = nan(0x400000), static MESSAGE_VERSION = 0}
+577					_last_valid_setpoint = _setpoint;
+$13 = true
+$14 = false
+Continuing.
+[Inferior 1 (process 75262) exited normally]

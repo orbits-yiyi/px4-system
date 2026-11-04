@@ -1,0 +1,1 @@
+PASS: 14 Markdown files, 1775 local links, 162 Shell blocks, 20 workbook chapters, 56/56 module coverage; Python syntax valid

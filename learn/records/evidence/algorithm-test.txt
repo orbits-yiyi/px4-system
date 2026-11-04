@@ -1,0 +1,19 @@
+Start testing: Nov 04 11:16 CST
+----------------------------------------------------------
+1/1 Testing: learning_algorithms
+1/1 Test: learning_algorithms
+Command: "/tmp/px4-learning-algorithms/learning_algorithms_test"
+Directory: /tmp/px4-learning-algorithms
+"learning_algorithms" start time: Nov 04 11:16 CST
+Output:
+----------------------------------------------------------
+PASS: 60 checks
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"learning_algorithms" end time: Nov 04 11:16 CST
+"learning_algorithms" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 04 11:16 CST

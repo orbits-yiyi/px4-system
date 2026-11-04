@@ -1,5 +1,7 @@
 # PX4 代码架构与开发指南
 
+本文作为**开发机制与扩展方法参考**。连续学习入口是[实战主文档](WORKBOOK.md)，当前环境与实际验证以[实施记录](records/IMPLEMENTATION.md)为准。
+
 配套实操：[开发调试实战](DEBUGGING.md)，覆盖 lab/VS Code、第一次源码修改、GDB、日志、测试、性能以及板端调试。硬件与仿真系统的组成见[技术架构详解](ARCHITECTURE.md)。
 
 [文档首页](README.md) · [系统架构与技术原理](TECHNICAL.md) · [学习路线](ROADMAP.md) · [操作与调试手册](OPERATIONS.md)

@@ -1,5 +1,7 @@
 # PX4 系统架构与技术原理
 
+本文作为**物理、数学与系统原理参考**。连续学习入口是[实战主文档](WORKBOOK.md)，当前环境与实际验证以[实施记录](records/IMPLEMENTATION.md)为准。
+
 [文档首页](README.md) · [代码架构与开发指南](DEVELOPMENT.md) · [学习路线](ROADMAP.md) · [操作与调试手册](OPERATIONS.md)
 
 硬件支持、外设组合与仿真方案的具体对照见[技术架构详解](ARCHITECTURE.md)；源码修改、GDB 和板端故障定位步骤见[开发调试实战](DEBUGGING.md)。

@@ -1,0 +1,13 @@
+$ listener learn_status -n 1
+
+TOPIC: learn_status
+ learn_status
+    timestamp: 13316000 (0.148000 seconds ago)
+    sample_count: 19
+    period_us: 200000
+    requested_period_ms: 200
+    period_limited: False
+
+$ learn_status stop
+$ param set LEARN_PERIOD 100
++ LEARN_PERIOD: curr: 200 -> new: 100

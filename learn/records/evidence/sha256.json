@@ -1,0 +1,16 @@
+{
+  "learn/labs/algorithm/CMakeLists.txt": "661979cc5863b1739c058272155a25e90e960bdaa54e9674b47654803b38692e",
+  "learn/labs/algorithm/reference_limiter.hpp": "2eb36409895763699c71e07fbe7bc6438029b8a6ab045a1c193af250b83d6dbf",
+  "learn/labs/algorithm/tests.cpp": "1fd8df43bb3ad2dc3253c9192ada76494f0f1d7e689784629a40b074bb3da248",
+  "learn/labs/check_module.py": "df19851a91018f9bf6648e53d22dca41ce046756f956313dcda1cc7d85c587a3",
+  "learn/labs/external_module/msg/CMakeLists.txt": "b7e99795cf088f0d02a075108ea6c267ea4112fa0a5b76ecdf3cfed696a92d58",
+  "learn/labs/external_module/msg/LearnStatus.msg": "3a7883132f890d2241ee2baf2f36b9e95978094f5ce40e0e29326ae1741316a0",
+  "learn/labs/external_module/src/CMakeLists.txt": "718f3802ef93ca3934a320dcb85d4fdf35c5e07d74e3a3ca915b719894a500c1",
+  "learn/labs/external_module/src/learn_status/CMakeLists.txt": "b9268ad8aa8a9201446a75403a399245dc8fa207cf6cb0d1e155080e9d7c65a9",
+  "learn/labs/external_module/src/learn_status/LearnStatus.cpp": "749289712e086512beb3fe719c216fb6cc128eb67f4f992084f45ea1810bcd40",
+  "learn/labs/external_module/src/learn_status/PeriodPolicy.hpp": "b7a938ce320ad3759b6e57eea6293739b2c852f2f3fdb3f584874d525eb8e39f",
+  "learn/labs/external_module/src/learn_status/learn_status_params.c": "27a55a9f66cf86b53469cc448081064b09fd1cdcde3533eb41d6f764272603ad",
+  "learn/labs/inspect_log.py": "69e2c44d8d923cb057286ab3e0e04765e70e81dd3c3b8997e39dfffa99657d4a",
+  "/tmp/px4-course-log-run/log/sess100/log100.ulg": "2210eb5ef72e747fe77b41823b260e1ebb96ba6f0b106bbe4cfa9c382ea85f62",
+  "build/px4_course/bin/px4": "842984757d1b45959bc6b63ec746cfc42beaa477c71fe6ac0f1ab64e60721d89"
+}

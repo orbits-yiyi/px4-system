@@ -1,0 +1,29 @@
+Excerpt from GDB logging; startup thread notifications omitted.
+Thread 184 "wq:test1" hit Breakpoint 1, LearnStatus::Run (this=0x555556dd6630 <lockstep_scheduler+112>) at /home/yiyi/Workspace/px4/PX4-Autopilot/learn/labs/external_module/src/learn_status/LearnStatus.cpp:71
+71		void Run() override
+73			if (should_exit()) {
+#0  LearnStatus::Run (this=0x7fffb00045e0) at /home/yiyi/Workspace/px4/PX4-Autopilot/learn/labs/external_module/src/learn_status/LearnStatus.cpp:73
+#1  0x000055555641dafa in px4::WorkQueue::Run (this=0x7ffff7a44cd0) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/common/px4_work_queue/WorkQueue.cpp:188
+#2  0x000055555641ee50 in px4::WorkQueueRunner (context=0x5555566a13c0 <px4::wq_configurations::test1>) at /home/yiyi/Workspace/px4/PX4-Autopilot/platforms/common/px4_work_queue/WorkQueueManager.cpp:238
+#3  0x00007ffff789cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#4  0x00007ffff7929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+$1 = 0
+$2 = 100000
+Temporary breakpoint 2 at 0x555556073ac8: file /home/yiyi/Workspace/px4/PX4-Autopilot/learn/labs/external_module/src/learn_status/LearnStatus.cpp, line 97.
+Continuing.
+
+Thread 184 "wq:test1" hit Temporary breakpoint 2, LearnStatus::Run (this=0x7fffb00045e0) at /home/yiyi/Workspace/px4/PX4-Autopilot/learn/labs/external_module/src/learn_status/LearnStatus.cpp:97
+97			_publication.publish(data);
+$3 = {timestamp = 11116000, sample_count = 1, period_us = 100000, requested_period_ms = 100, period_limited = false, _padding0 = "\000\000"}
+$4 = 1
+Temporary breakpoint 3 at 0x555556073a0b: file /home/yiyi/Workspace/px4/PX4-Autopilot/learn/labs/external_module/src/learn_status/LearnStatus.cpp, line 86.
+Continuing.
+
+Thread 184 "wq:test1" hit Temporary breakpoint 3, LearnStatus::Run (this=0x7fffb00045e0) at /home/yiyi/Workspace/px4/PX4-Autopilot/learn/labs/external_module/src/learn_status/LearnStatus.cpp:86
+86					_period_us = next_period;
+$5 = 100000
+$6 = 200000
+87					ScheduleOnInterval(_period_us);
+$7 = 200000
+Continuing.
+[Inferior 1 (process 72179) exited normally]
